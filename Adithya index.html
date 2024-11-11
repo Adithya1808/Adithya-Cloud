@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PZT Tile Calculator</title>
+    <script>
+        async function registerUser () {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const response = await fetch('http://localhost:3000/users/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.text();
+            alert(data);
+        }
+
+        async function loginUser () {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const response = await fetch('http://localhost:3000/users/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            alert('Login successful!');
+        }
+
+        async function calculateTiles() {
+            const length = document.getElementById('length').value;
+            const width = document.getElementById('width').value;
+            const footTraffic = document.getElementById('footTraffic').value;
+            const response = await fetch('http://localhost:3000/pzt/calculate-tiles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': Bearer ${localStorage.getItem('token')}
+                },
+                body: JSON.stringify({ length, width, footTraffic })
+            });
+            const data = await response.json();
+            alert(Required Tiles: ${data.requiredTiles}, Daily Energy Output: ${data.dailyEnergyOutput} watts, Monthly Energy Output: ${data.monthlyEnergyOutput} watts);
+        }
+    </script>
+</head>
+<body>
+    <h1>PZT Tile Calculator</h1>
+    <h2>Register</h2>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button onclick="registerUser ()">Register</button>
+
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" required>
+    <input type="password" id="loginPassword" placeholder="Password" required>
+    <button onclick="loginUser ()">Login</button>
+
+    <h2>Calculate Required Tiles</h2>
+    <input type="number" id="length" placeholder="Length (m)" required>
+    <input type="number" id="width" placeholder="Width (m)" required>
+    <input type="number" id="footTraffic" placeholder="Foot Traffic (steps/day)" required>
+    <button onclick="calculateTiles()">Calculate</button>
+</body>
+</html>
